@@ -1,6 +1,6 @@
 import {Router} from "express";
-import { __dirname } from "../utils.js";
-import ProductManager from "../controllers/ProductManager.js";
+import { __dirname } from "../utils.js"
+import ProductManager from "../dao/filemanagers/controllers/ProductManager.js";
 import { parse } from "path";
 
 const manager = new ProductManager(__dirname+"/files/products.json");
