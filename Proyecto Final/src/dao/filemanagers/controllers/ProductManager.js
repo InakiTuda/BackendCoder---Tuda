@@ -99,8 +99,7 @@ export default class ProductManager {
         }
     }
 
-    deleteProducts = async (id) => {
-        const {pid} = id;
+    deleteProducts = async (pid) => {
         const allProducts = await this.getProducts({});
         const productoNoEncontrado = allProducts.filter(element => element.id !== parseInt(pid));
         await fs.promises.writeFile(this.path, JSON.stringify(productoNoEncontrado, null, 2));

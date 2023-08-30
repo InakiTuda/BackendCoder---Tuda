@@ -101,5 +101,16 @@
     "stock": 75,
     "category": "Productos en Stock",
     "status": true
+  },
+  {
+    "id": 12,
+    "title": "Producto 12",
+    "description": "Este es el duodecimo producto prueba",
+    "price": 750,
+    "thumbnail": "Sin imagen",
+    "code": "abc134",
+    "stock": 80,
+    "category": "Productos en Stock",
+    "status": true
   }
 ]
