@@ -111,7 +111,7 @@ body{
     text-align: center;
 }
 .card .img img {
-    width: 100px;
+    width: 60%;
     transform: scale(1);
     transition: 0.5s;
 }
