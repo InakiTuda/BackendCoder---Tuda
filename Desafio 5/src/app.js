@@ -33,7 +33,7 @@ app.use(session({
 }));
 
 app.use("/", viewsRouter);
-app.use("/api/sessions", sessionRouter);
+app.use("/api/session", sessionRouter);
 
 app.listen(PORT, () => {
     console.log(`Servidor Express Puerto ${PORT}`)

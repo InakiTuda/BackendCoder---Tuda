@@ -2,15 +2,25 @@ import { Router } from "express";
 
 const router = Router();
 
-router.get("/register", (req, res) => {
+const publicAccess = (req,res,next) =>{
+    if(req.session.user) return res.redirect('/profile');
+    next();
+}
+
+const privateAccess = (req,res,next)=>{
+    if(!req.session.user) return res.redirect('/login');
+    next();
+}
+
+router.get("/register", publicAccess, (req, res) => {
     res.render("register");
 });
 
-router.get("/login", (req, res) => {
+router.get("/login", publicAccess, (req, res) => {
     res.render("login");
 });
 
-router.get("/profile", (req, res) => {
+router.get("/profile", privateAccess, (req, res) => {
     res.render("profile", {
         user: req.session.user
     })
