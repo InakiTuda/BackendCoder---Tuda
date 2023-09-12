@@ -1,0 +1,14 @@
+<div>
+    <h1>Bienvenido {{user.name}}</h1>
+
+    <script>
+        setTimeout(function () {
+            window.location.href = "/api/views/products";
+        }, 5000)
+    </script>
+
+    <a href="/api/session/logout"><button>Salir</button></a>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/index.js"></script>
+</div>

@@ -2,18 +2,36 @@ import express from "express";
 import routerV from "./routes/view.router.js";
 import routerP from "./routes/products.router.js";
 import routerC from "./routes/carts.router.js";
+import routerS from "./routes/sessions.router.js";
 import { __dirname } from "./utils.js";
 import handlebars from "express-handlebars";
 import {Server} from "socket.io";
-import connectToDB from "./config/dbConfig.js";
+import "../src/config/dbConfig.js";
+import cookieParser from "cookie-parser";
 import socketProducts from "./listeners/socketProducts.js";
 import socketChat from "./listeners/socketChat.js";
+import session from "express-session";
+import FileStore from "session-file-store";
+import MongoStore from "connect-mongo";
 
 const app = express();
 const PORT = process.env.PORT||8080;
+const fileStore = FileStore(session)
 
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
+
+// Sessions
+app.use(cookieParser());
+app.use(session({
+    store: MongoStore.create({
+        mongoUrl: "mongodb+srv://inakituda:123456ituda@cluster0.pbsxdwh.mongodb.net/ecommerce?retryWrites=true&w=majority",
+        ttl: 60000,
+    }),
+    secret: "BackendCoderTuda",
+    resave: false,
+    saveUninitialized: false,
+}));
 
 app.use(express.static(__dirname+"/public"));
 
@@ -21,19 +39,43 @@ app.engine("handlebars", handlebars.engine());
 app.set("view engine", "handlebars");
 app.set("views", __dirname+"/views");
 
+app.use("/api/views", routerV);
 app.use("/api/products", routerP);
+app.use("/api/views/products", routerP);
 app.use("/api/carts", routerC);
-app.use("/", routerV);
+app.use("/api/session", routerS);
 
-connectToDB()
+app.get('/', (req, res) => {
+    res.send('Bienvenidos');
+});
+
+app.get('/chat', (req, res) => {
+    res.render('chat', { messages: [] }); 
+});
+
+app.get('/login', (req, res) => {
+    res.render('login'); 
+});
+  
+app.get('/register', (req, res) => {
+    res.render('register'); 
+});
+  
+app.get('/profile', (req, res) => {
+    res.render('profile', {
+    user: req.session.user,
+    }); 
+});
+  
+
 
 const httpServer = app.listen(PORT, () => {
     try {
         console.log(`Escuchando al puerto ${PORT}\nAcceder a:`);
         console.log(`\t1). http://localhost:${PORT}/api/products`);
         console.log(`\t2). http://localhost:${PORT}/api/carts`);
-    } catch (err) {
-        console.log(err);
+    } catch (error) {
+        console.log(error);
     }
 });
 

@@ -4,17 +4,59 @@ import ProductManager from "../dao/mongomanagers/productManagerMongo.js";
 const pm = new ProductManager();
 const routerV = Router()
 
+// Vista Home (/api/views)
 routerV.get("/", async (req, res) => {
-    const listaProducts = await pm.getProductsView();
-    res.render("home", {listaProducts});
+    try {
+        const products = await pm.getProducts();
+        res.render("home", {products})
+    } catch (error) {
+        res.status(500).json({error: "No se pudo cargar la lista de productos"});
+    }
 });
 
-routerV.get("/realtimeproducts", (req, res) => {
-    res.render("realtimeproducts")
+// Vista Products (/api/views/products)
+routerV.get("/products", async (req, res) => {
+    try {
+        const products = await pm.getProducts();
+        res.render("products", {products, user: req.session.user});
+    } catch (error) {
+        res.status(500).json({error: "No se pudo cargar la lista de productos"});
+    }
 });
 
-routerV.get("/chat", (req, res) => {
-    res.render("chat");
+// Vista RealTimeProducts (/api/views/realtimeproducts)
+routerV.get("/realtimeproducts", async (req, res) => {
+    try {
+        const products = await pm.getProducts();
+        res.render("realTimeProducts", {products});
+    } catch (error) {
+        res.status(500).json({error: "No se pudo cargar la lista de productos"});
+    }
+});
+
+// Login, Register y Profile
+const publicAccess = (req, res, next) => {
+    if (req.session.user) return res.redirect("/profile");
+    next();
+};
+
+const privateAccess = (req, res, next) => {
+    if (!req.session.user) return res.redirect("/login");
+    next();
+};
+
+routerV.get("/register", publicAccess, (req, res) => {
+    res.render("register")
+});
+
+routerV.get("/login", publicAccess, (req, res) => {
+    res.render("login")
+});
+
+routerV.get("/profile", privateAccess, (req, res) => {
+    res.render("profile", {
+        user: req.session.user,
+    })
 });
 
 export default routerV;
