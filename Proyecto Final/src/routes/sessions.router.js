@@ -19,22 +19,24 @@ routerS.post("/register", async(req, res) => {
     res.send({status: "success", message: "Usuario registrado correctamente"});
 });
 
-routerS.post("/login", async (req, res) => {
-    const {email, password} = req.body;
-    const user = await userModel.findOne({email, password})
+routerS.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+    const user = await userModel.findOne({email})
     if (!user) {
-        return res.status(400).send({status: "error", error: "Email o contraseña incorrectos"});
+    return res.status(400).send({ status: "error", error: "Datos Incorrectos"})
     }
-    if (email === "adminCoder@coder.com" && password === "adminCod3r123") {
-        user.role = "ADMIN"
+    // Validation for ADMIN user as specified in the deliverable slides
+    if (email === 'adminCoder@coder.com' && password === 'adminCod3r123') {
+    user.role = 'ADMIN';
     }
     req.session.user = {
-        name: `${user.first_name} ${user.last_name}`,
-        email: user.email,
-        role: user.role, 
+    name: `${user.first_name} ${user.last_name}`,
+    email: user.email,
+    age: user.age,
+    role: user.role, // Adding user role to the session
     }
-    res.redirect("/api/views/products")
-});
+    res.redirect('/api/views');
+})
 
 routerS.get("/logout", (req, res) => {
     req.session.destroy(err  => {

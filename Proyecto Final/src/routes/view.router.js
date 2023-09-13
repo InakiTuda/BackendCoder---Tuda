@@ -8,7 +8,7 @@ const routerV = Router()
 routerV.get("/", async (req, res) => {
     try {
         const products = await pm.getProducts();
-        res.render("home", {products})
+        res.render("products", {products})
     } catch (error) {
         res.status(500).json({error: "No se pudo cargar la lista de productos"});
     }

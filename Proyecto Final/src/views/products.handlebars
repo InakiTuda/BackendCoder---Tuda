@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lista de Productos</title>
+</head>
+<body>
+    <h1>Lista de Productos</h1>
+    <div>
+        <h2>Bienvenido {{user.name}}</h2>
+        <p>Email: {{user.email}}</p>
+        <p>Rol: {{user.role}}</p>
+    </div>
+    <ul>
+        {{#each products.docs}}
+        <li>
+            <h2>Producto: {{title}}</h2>
+            <p>Precio: ${{price}}</p>
+            <button class="add-to-cart" data-product-id = {{_id}}>Agregar al Carrito</button>
+        </li>
+        {{/each}}
+    </ul>
+
+    {{#if totalPages}}
+        <p>Página {{page}} de {{totalPages}}</p>
+        {{#if prevLink}}
+            <a href={{prevLink}}>Página anterior</a>
+        {{/if}}
+        {{#if nextLink}}
+            <a href={{nextLink}}>Página siguiente</a>
+        {{/if}}
+    {{/if}}
+
+    <script>
+        function viewDetails(productId) {
+            window.location.href = `/api/views/products/${productId}`;
+        }
+
+        function addToCart(productId) {
+            fetch (`/api/carts/${cartId}/products/${productId}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({quantity: 1}),
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(cart) {
+                console.log("Producto agregado al carrito", cart);
+            })
+            .catch(function(error) {
+                console.error("Error al agregar productos al carrito", error);
+            });
+        }
+    </script>
+
+    <a href="/api/session/logout"><button>Cerrar Sesión</button></a>
+    
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/products.js"></script>
+</body>
+</html>
