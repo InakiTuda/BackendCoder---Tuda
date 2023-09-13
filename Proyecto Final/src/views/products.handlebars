@@ -22,27 +22,6 @@
         {{/each}}
     </ul>
 
-    <script>
-        function addToCart(productId) {
-            fetch (`/api/carts/${cartId}/products/${productId}`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({quantity: 1}),
-            })
-            .then(function(response) {
-                return response.json();
-            })
-            .then(function(cart) {
-                console.log("Producto agregado al carrito", cart);
-            })
-            .catch(function(error) {
-                console.error("Error al agregar productos al carrito", error);
-            });
-        }
-    </script>
-
     <a href="/api/session/logout"><button>Cerrar Sesión</button></a>
     
     <script src="/socket.io/socket.io.js"></script>
