@@ -22,21 +22,7 @@
         {{/each}}
     </ul>
 
-    {{#if totalPages}}
-        <p>Página {{page}} de {{totalPages}}</p>
-        {{#if prevLink}}
-            <a href={{prevLink}}>Página anterior</a>
-        {{/if}}
-        {{#if nextLink}}
-            <a href={{nextLink}}>Página siguiente</a>
-        {{/if}}
-    {{/if}}
-
     <script>
-        function viewDetails(productId) {
-            window.location.href = `/api/views/products/${productId}`;
-        }
-
         function addToCart(productId) {
             fetch (`/api/carts/${cartId}/products/${productId}`, {
                 method: "POST",
