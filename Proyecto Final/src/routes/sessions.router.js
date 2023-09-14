@@ -1,6 +1,7 @@
 import Router from "express";
 import userModel from "../dao/models/user.model.js";
 import {hashData} from "../utils.js";
+import passport from "passport";
 
 const routerS = Router();
 
@@ -44,5 +45,15 @@ routerS.get("/logout", (req, res) => {
         res.redirect("/login")
     });
 });
+
+// Github
+routerS.get("/github", passport.authenticate("github", {scope: ["user: email"]}))
+
+routerS.get("/githubCallback", passport.authenticate("github", 
+    {failureRedirect: '/login',
+    successRedirect: '/profile',
+    }), async(req, res) => {
+    res.send("¡Bienvenido! Inicio de Sesión desde Github")
+})
 
 export default routerS;

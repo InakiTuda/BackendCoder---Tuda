@@ -13,6 +13,8 @@ import socketChat from "./listeners/socketChat.js";
 import session from "express-session";
 import FileStore from "session-file-store";
 import MongoStore from "connect-mongo";
+import passport from "passport";
+import "../passport/passportStrategies.js";
 
 const app = express();
 const PORT = process.env.PORT||8080;
@@ -67,7 +69,9 @@ app.get('/profile', (req, res) => {
     }); 
 });
   
-
+// Passport
+app.use(passport.initialize())
+app.use(passport.session())
 
 const httpServer = app.listen(PORT, () => {
     try {
