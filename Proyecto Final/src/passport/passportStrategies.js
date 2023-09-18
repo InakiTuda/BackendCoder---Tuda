@@ -1,9 +1,9 @@
 import passport from "passport";
-import userModel from "../src/dao/models/user.model.js";
+import userModel from "../dao/models/user.model.js";
 import { Strategy as LocalStrategy } from "passport-local";
 import { Strategy as GithubStrategy } from "passport-github2";
-import {usersManager} from "../src/dao/mongomanagers/userManagerMongo.js";
-import { compareData } from "../src/utils.js";
+import {usersManager} from "../dao/mongomanagers/userManagerMongo.js";
+import { compareData } from "../utils.js";
 
 // Estrategia Local
 passport.use("local", new LocalStrategy (
@@ -28,11 +28,11 @@ passport.use("local", new LocalStrategy (
 passport.use("github", new GithubStrategy ({
     clientID: "Iv1.886529c8e91a6d9a",
     clientSecret: "f8b3206f5c3d035758334b7e5b7df346e63d0384",
-    callbackURL: "http://localhost:8080/api/session/github"
+    callbackURL: "http://localhost:8080/api/session/github",
     },
     async function(accessToken, refreshToken, profile, done) {
         try {
-            const user = await usersManager.findUser(profile.username)
+            const user = await userModel.findOne({username: profile.username});
             // Login
             if(user) {
                 if(user.fromGithub) {
@@ -43,13 +43,15 @@ passport.use("github", new GithubStrategy ({
             }
             // Register
             const newUser = {
-                first_name: profile.displayName.split("") [0],
-                last_name: profile.displayName.split("") [1],
+                first_name: profile.displayName.split(" ") [0],
+                last_name: profile.displayName.split(" ") [1],
                 username: profile.username,
-                password: "",
-                fromGithub: true
+                age: " ",
+                email: " ",
+                password: " ",
+                fromGithub: true,
             }
-            const result = await usersManager.create(newUser)
+            const result = await userModel.create(newUser)
             return done(null, result)
         } catch (error) {
             done(error)
