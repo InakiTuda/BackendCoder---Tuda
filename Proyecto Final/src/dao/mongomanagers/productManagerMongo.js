@@ -1,74 +1,66 @@
-import {productsModel}  from "../models/products.model.js";
+import {productsModel} from "../models/products.model.js";
 
 export default class ProductManager {
-    findAll = async (obj) => {
-        const {limit, page, sortPrice, ...query} = obj
-        console.log(query)
-        try {
-            const result = await productsModel.paginate(query, {limit, page, sort:{price: sortPrice}});
-            const info = {
-                count: result.totalDocs,
-                payload: result.docs,
-                totalPages: result.totalPages,
-                nextLink: result.hasNextPage
-                ? `http://localhost:8080/api/products?page=${result.nextPage}`
-                : null,
-                prevLink: result.hasPrevPage
-                ? `http://localhost:8080/api/products?page=${result.prevPage}`
-                : null,
-            } 
-            return {info};
-        } catch (error) {
-            return error;
-        }
+  // Add Products
+  async addProduct(product) {
+    try {
+      const newProduct = new productsModel(product);
+      await newProduct.save();
+      return newProduct;
+    } catch (error) {
+      console.log('Error al agregar producto', error.message);
+      throw new Error('Error al agregar producto');
     }
+  }
 
-    getProductsView = async () => {
-        try {
-            return await productsModel.find().lean();
-        } catch (err) {
-            return err;
-        }
+  async getProductsCount(queryOptions = {}) {
+    return await productsModel.countDocuments(queryOptions);
+  }
+  
+  // GetProducts con 10 por página
+  async getProducts(queryOptions = {}, sortOptions = {}, limit = 10, page = 1) {
+    const options = {
+      sort: sortOptions,
+      page: page,
+      limit: limit,
+      lean: true,
     };
+    const result = await productsModel.paginate(queryOptions, options);
+    return result;
+  }
 
-    getProducts = async (filter, options) => {
-        try {
-            return await productsModel.paginate(filter, options);
-        } catch (err) {
-            return err;
-        }
-    };
+  // Productos por ID
+  async getProductById(id) {
+    try {
+      const product = await productsModel.findById(id);
+      return product;
+    } catch (error) {
+      console.log('Error al obtener producto por ID', error.message);
+      throw new Error('Error al obtener producto por ID');
+    }
+  }
 
-    getProductsById = async (id) => {
-        try {
-            return await productsModel.findById(id);
-        } catch (err) {
-            return {error: err.message}
-        }
-    };
+  //Actualizar producto
+  async updateProduct(id, updatedProducts) {
+    try {
+      const product = await productsModel.findByIdAndUpdate(id, updatedProducts, {new: true});
+      return product;
+    } catch (error) {
+      console.log('Error al actualizar producto', error.message);
+      throw new Error('Error al actualizar producto');
+    }
+  }
 
-    addProduct = async (product) => {
-        try {
-            await productsModel.create(product);
-            return await productsModel.findOne({title: product.title})
-        } catch (err) {
-            return err;
-        }
-    };
+  //Eliminar producto por ID
+  async deleteProduct(id) {
+    try {
+      const deletedProduct = await productsModel.findByIdAndDelete(id);
+      return deletedProduct;
+    } catch (error) {
+      console.log('Error al eliminar producto', error.message);
+      throw new Error('Error al eliminar producto');
+    }
+  }
+}
 
-    updateProduct = async (id, product) => {
-        try {
-            return await productsModel.findByIdAndUpdate(id, {$set: product})
-        } catch (err) {
-            return err;
-        }
-    };
-
-    deleteProduct = async (id) => {
-        try {
-            return await productsModel.findByIdAndDelete(id);
-        } catch (err) {
-            return err;
-        }
-    };
-};
+export {ProductManager};

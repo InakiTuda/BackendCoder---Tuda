@@ -74,13 +74,7 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 const httpServer = app.listen(PORT, () => {
-    try {
-        console.log(`Escuchando al puerto ${PORT}\nAcceder a:`);
-        console.log(`\t1). http://localhost:${PORT}/api/products`);
-        console.log(`\t2). http://localhost:${PORT}/api/carts`);
-    } catch (error) {
-        console.log(error);
-    }
+        console.log(`Conectado al puerto ${PORT}`);
 });
 
 const socketServer = new Server(httpServer);
