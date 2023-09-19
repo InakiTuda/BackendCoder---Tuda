@@ -49,11 +49,10 @@ routerS.get("/logout", (req, res) => {
 // Github
 routerS.get("/github", passport.authenticate("github", {scope: ["user: email"]}))
 
-routerS.get("/githubCallback", passport.authenticate("github", 
-    {failureRedirect: '/login',
-    successRedirect: '/profile',
-    }), async(req, res) => {
-    res.send("¡Bienvenido! Inicio de Sesión desde Github")
+routerS.get('/githubcallback', passport.authenticate('github',{failureRedirect: '/login', successRedirect: '/profile'}), async (req, res)=>
+{
+    req.session.user = req.user
+    res.redirect('/profile')
 })
 
 export default routerS;

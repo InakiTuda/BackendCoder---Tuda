@@ -26,13 +26,18 @@ passport.use("local", new LocalStrategy (
 
 // Estrategia Github
 passport.use("github", new GithubStrategy ({
-    clientID: "Iv1.886529c8e91a6d9a",
-    clientSecret: "f8b3206f5c3d035758334b7e5b7df346e63d0384",
-    callbackURL: "http://localhost:8080/api/session/github",
+    clientID: 'Iv1.886529c8e91a6d9a',
+    clientSecret: 'f8b3206f5c3d035758334b7e5b7df346e63d0384',
+    callbackURL: 'http://localhost:8080/api/session/githubcallback',
     },
     async function(accessToken, refreshToken, profile, done) {
         try {
-            const user = await userModel.findOne({username: profile.username});
+            //console.log(profile)
+            const user = await userModel.findOne({email: profile.username});
+            if (user) {
+                return done(null, user)
+            }
+            //console.log(user)
             // Login
             if(user) {
                 if(user.fromGithub) {
@@ -45,9 +50,8 @@ passport.use("github", new GithubStrategy ({
             const newUser = {
                 first_name: profile.displayName.split(" ") [0],
                 last_name: profile.displayName.split(" ") [1],
-                username: profile.username,
+                email: profile.username,
                 age: " ",
-                email: " ",
                 password: " ",
                 fromGithub: true,
             }
@@ -60,13 +64,19 @@ passport.use("github", new GithubStrategy ({
 ));
 
 // User => ID
-passport.serializeUser((usuario, done) => {
-    done(null, usuario._id)
-})
+passport.serializeUser((user, done) => {
+    //console.log('serializeUser')
+    //console.log(user)
+    //console.log('serializeUser')
+    done(null, user._id)
+});
 
 // ID => User
 passport.deserializeUser(async (id, done) => {
     try {
+        //console.log('deserializeUser')
+        //console.log(id)
+        //console.log('deserializeUser')
         const user = await userModel.findById(id)
         done(null, user)
     } catch (error) {
