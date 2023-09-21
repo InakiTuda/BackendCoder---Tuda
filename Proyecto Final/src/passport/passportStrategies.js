@@ -68,7 +68,7 @@ passport.serializeUser((user, done) => {
     //console.log('serializeUser')
     //console.log(user)
     //console.log('serializeUser')
-    done(null, user._id)
+    done(null, user)
 });
 
 // ID => User

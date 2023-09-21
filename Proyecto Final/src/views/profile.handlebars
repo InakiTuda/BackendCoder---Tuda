@@ -1,13 +1,11 @@
 <div>
-    <h1>Bienvenido {{user.name}}</h1>
+    <h1>Bienvenido {{user.first_name}} {{user.last_name}}</h1>
 
     <script>
         setTimeout(function () {
             window.location.href = "/api/views/products";
         }, 2000)
     </script>
-
-    <a href="/api/session/logout"><button>Cerrar Sesión</button></a>
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/index.js"></script>

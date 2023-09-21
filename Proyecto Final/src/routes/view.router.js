@@ -18,7 +18,7 @@ routerV.get("/", async (req, res) => {
 routerV.get("/products", async (req, res) => {
     try {
         const products = await pm.getProducts();
-        res.render("products", {products, user: req.session.user});
+        res.render("products", {products, user: req.session.passport.user});
     } catch (error) {
         res.status(500).json({error: "No se pudo cargar la lista de productos"});
     }
