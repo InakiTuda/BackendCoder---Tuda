@@ -8,15 +8,15 @@
 <body>
     <div>
         <h2>¡Hola {{user.first_name}}!</h2>
-        <p>Email/Usuario: {{user.email}}</p>
+        <p>Usuario: {{user.email}}</p>
         <p>Rol: {{user.role}}</p>
     </div>
     <h1>Lista de Productos</h1>
     <ul>
         {{#each products.docs}}
         <li>
-            <h2>Producto: {{title}}</h2>
-            <p>Precio: ${{price}}</p>
+            <h2>{{title}}</h2>
+            <p>${{price}}</p>
             <button class="add-to-cart" data-product-id = {{_id}}>Agregar al Carrito</button>
         </li>
         {{/each}}

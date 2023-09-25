@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const userCollection = "User";
+const userCollection = "user";
 
 const userSchema = new mongoose.Schema({
     first_name: {
@@ -13,19 +13,15 @@ const userSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: true
+        required: true,
     },
     password: {
         type: String,
         required: true
     },
-    age: {
-        type: Number,
-        required: true
-    },
     role: {
         type: String,
-        default: "Usuario",
+        default: "USER",
     }
 });
 

@@ -51,7 +51,6 @@ passport.use("github", new GithubStrategy ({
                 first_name: profile.displayName.split(" ") [0],
                 last_name: profile.displayName.split(" ") [1],
                 email: profile.username,
-                age: " ",
                 password: " ",
                 fromGithub: true,
             }
