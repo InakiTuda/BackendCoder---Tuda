@@ -18,6 +18,25 @@ class UsersManager {
             return error
         }
     }
+
+    async findUserById(id) {
+        try {
+            const user = await userModel.findById(id)
+            return user
+        } catch (error) {
+            return error
+        }
+    }
+
+    async deleteUser(username) {
+        try {
+            const user = await userModel.findOneAndDelete({username})
+            return user
+        } catch (error) {
+            return error
+        }
+    }
 }
+
 
 export const usersManager = new UsersManager();

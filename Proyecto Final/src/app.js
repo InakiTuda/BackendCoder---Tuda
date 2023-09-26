@@ -3,6 +3,7 @@ import routerV from "./routes/view.router.js";
 import routerP from "./routes/products.router.js";
 import routerC from "./routes/carts.router.js";
 import routerS from "./routes/sessions.router.js";
+import routerJ from "./routes/jwt.router.js";
 import { __dirname } from "./utils.js";
 import handlebars from "express-handlebars";
 import {Server} from "socket.io";
@@ -29,7 +30,7 @@ app.use(session({
     store: MongoStore.create({
         mongoUrl: "mongodb+srv://inakituda:123456ituda@cluster0.pbsxdwh.mongodb.net/ecommerce?retryWrites=true&w=majority",
         ttl: 60000,
-    }),
+   }),
     secret: "BackendCoderTuda",
     resave: false,
     saveUninitialized: false,
@@ -46,6 +47,7 @@ app.use("/api/products", routerP);
 app.use("/api/views/products", routerP);
 app.use("/api/carts", routerC);
 app.use("/api/session", routerS);
+app.use("/api/jwt", routerJ);
 
 app.get('/', (req, res) => {
     res.send('Bienvenidos');
