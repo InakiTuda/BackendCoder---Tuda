@@ -3,7 +3,6 @@ import routerV from "./routes/view.router.js";
 import routerP from "./routes/products.router.js";
 import routerC from "./routes/carts.router.js";
 import routerS from "./routes/sessions.router.js";
-import routerJ from "./routes/jwt.router.js";
 import { __dirname } from "./utils.js";
 import handlebars from "express-handlebars";
 import {Server} from "socket.io";
@@ -47,10 +46,9 @@ app.use("/api/products", routerP);
 app.use("/api/views/products", routerP);
 app.use("/api/carts", routerC);
 app.use("/api/session", routerS);
-app.use("/api/jwt", routerJ);
 
 app.get('/', (req, res) => {
-    res.send('Bienvenidos');
+    res.send('Bienvenidos!');
 });
 
 app.get('/chat', (req, res) => {

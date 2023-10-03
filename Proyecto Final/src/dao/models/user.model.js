@@ -15,14 +15,26 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    age: {
+        type: Number,
+        required: true,
+    },
     password: {
         type: String,
         required: true
     },
+    cart: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Carts",
+    },
     role: {
         type: String,
         default: "USER",
-    }
+    },
+    fromGithub: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const userModel = mongoose.model(userCollection, userSchema);

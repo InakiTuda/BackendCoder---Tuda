@@ -54,6 +54,7 @@ routerS.post('/login', async (req, res) => {
       user.role = "ADMIN";
     }
     req.session.passport.user = {
+      _id: user._id,
       name: `${user.first_name}${user.last_name}`,
       email: user.email,
       age: user.age,
@@ -77,5 +78,14 @@ routerS.get('/githubcallback', passport.authenticate('github',{failureRedirect: 
     req.session.user = req.user
     res.redirect('/profile')
 })
+
+// Ruta Current
+routerS.get("/current", (req, res) => {
+  if (req.isAuthenticated()) {
+    res.status(200).json({user: req.user});
+  } else {
+    res.status(401).json({error: "Usuario no autenticado"});
+  }
+});
 
 export default routerS;
