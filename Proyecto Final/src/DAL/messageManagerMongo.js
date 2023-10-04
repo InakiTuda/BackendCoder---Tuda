@@ -1,4 +1,4 @@
-import messageModel from "../models/messages.model.js";
+import messageModel from "../db/models/messages.model.js";
 
 export default class MessagesManager {
     getMessages = async() => {

@@ -1,4 +1,5 @@
 import express from "express";
+import config from "./config.js";
 import routerV from "./routes/view.router.js";
 import routerP from "./routes/products.router.js";
 import routerC from "./routes/carts.router.js";
@@ -17,11 +18,11 @@ import passport from "passport";
 import "./passport/passportStrategies.js";
 
 const app = express();
-const PORT = process.env.PORT||8080;
+const PORT = process.env.PORT;
 const fileStore = FileStore(session)
 
 app.use(express.json());
-app.use(express.urlencoded({extended:true}));
+app.use(express.urlencoded({extended: true}));
 
 // Sessions
 app.use(cookieParser());
@@ -30,7 +31,7 @@ app.use(session({
         mongoUrl: "mongodb+srv://inakituda:123456ituda@cluster0.pbsxdwh.mongodb.net/ecommerce?retryWrites=true&w=majority",
         ttl: 60000,
    }),
-    secret: "BackendCoderTuda",
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
 }));

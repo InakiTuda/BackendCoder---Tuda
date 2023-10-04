@@ -1,5 +1,5 @@
 import {Router} from "express";
-import ProductManager from "../dao/mongomanagers/productManagerMongo.js";
+import ProductManager from "../DAL/productManagerMongo.js";
 
 const pm = new ProductManager();
 const routerV = Router()

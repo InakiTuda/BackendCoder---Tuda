@@ -1,6 +1,6 @@
 import {Router} from "express";
 const routerP = Router();
-import ProductManager from "../dao/mongomanagers/productManagerMongo.js";
+import ProductManager from "../DAL/productManagerMongo.js";
 const pm = new ProductManager();
 
 routerP.get("/", async (req, res) => {

@@ -1,7 +1,8 @@
 import Router from "express";
-import userModel from "../dao/models/user.model.js";
+import userModel from "../db/models/user.model.js";
 import {compareData, hashData} from "../utils.js";
 import passport from "passport";
+import { getUsers, createUser } from "../controllers/users.controller.js";
 
 const routerS = Router();
 
@@ -87,5 +88,8 @@ routerS.get("/current", (req, res) => {
     res.status(401).json({error: "Usuario no autenticado"});
   }
 });
+
+routerS.get("/", getUsers);
+routerS.post("/", createUser);
 
 export default routerS;
