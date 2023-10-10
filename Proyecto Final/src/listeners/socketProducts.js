@@ -1,4 +1,4 @@
-import ProductManager from "../DAL/productManagerMongo.js";
+import ProductManager from "../DAL/DAOs/productManagerMongo.js";
 
 const pm = new ProductManager();
 

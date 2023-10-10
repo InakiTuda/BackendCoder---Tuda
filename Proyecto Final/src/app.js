@@ -18,7 +18,7 @@ import passport from "passport";
 import "./passport/passportStrategies.js";
 
 const app = express();
-const PORT = process.env.PORT;
+const PORT = config.port;
 const fileStore = FileStore(session)
 
 app.use(express.json());
