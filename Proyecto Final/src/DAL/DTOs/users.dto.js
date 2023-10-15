@@ -6,5 +6,5 @@ export default class UsersDto {
       this.username = user.username;
       this.role = user.role;
       this.fromGithub = user.fromGithub;
-    }
+    };
 }

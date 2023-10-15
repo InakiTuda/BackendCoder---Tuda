@@ -1,6 +1,6 @@
-import ProductManager from "../DAL/DAOs/productManagerMongo.js";
+import {ProductManagerMongo} from "../DAL/DAOs/productManagerMongo.js";
 
-const pm = new ProductManager();
+const pm = new ProductManagerMongo();
 
 const socketProducts = (socketServer) => {
     socketServer.on("connection",async(socket)=>{

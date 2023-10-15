@@ -1,6 +1,6 @@
 import userModel from "../mongoDB/models/user.model.js";
 
-class UsersManager {
+class UsersManagerMongo {
     async create(user) {
         try {
             const newUser = await userModel.create(user)
@@ -39,4 +39,4 @@ class UsersManager {
 }
 
 
-export const usersManager = new UsersManager();
+export const usersManager = new UsersManagerMongo();

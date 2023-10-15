@@ -1,77 +1,84 @@
-import {cartModel} from "../../db/models/carts.model.js";
+import {cartModel} from "../mongoDB/models/carts.model.js";
 
-class CartManager {
-    getCarts = async () => {
-        try {
-            const carts = await cartModel.find().lean();
-            return carts;
-        } catch (err) {
-            console.error("Error al obtener los carritos:", err.message);
-            return [];
-        }
+class CartManagerMongo {
+    constructor() {
+        this.loadCarts();
     };
 
-    getCartById = async (cartId) => {
-        try {
-            const cart = await cartModel.findById(cartId)
-            return cart;
-        } catch (err) {
-            console.error("Error al obtener el carrito por ID:", err.message);
-            return err;
-        }
+    async loadCarts() {
+        this.carts = await cartModel.find();
     };
 
-    addCart = async (products) => {
-        try {
-            let cartData = {};
-            if (products && products.length > 0) {
-                cartData.products = products;
-            }
-            const cart = await cartModel.create(cartData);
-            return cart;
-        } catch (err) {
-            console.error("Error al crear el carrito:", err.message);
-            return err;
-        }
+    async saveCarts(cart) {
+        await cart.save();
     };
 
-    addProductInCart = async (cid, obj) => {
-        try {
-            const filter = {_id: cid, "products._id": obj._id};
-            const cart = await cartModel.findById(cid);
-            const findProduct = cart.products.some((product) => product._id.createFromHexString() === obj._id);
-            if (findProduct) {
-                const update = { $inc: {"products.$.quantity": obj.quantity}};
-                await cartModel.updateOne(filter, update); 
+    async createCarts() {
+        const newCart = new cartModel({
+            products: [],
+        });
+        const savedCarts = await this.saveCarts(newCart);
+        return savedCarts;
+    };
+
+    async getCartsById(cid) {
+        return await cartModel.findById(cid);
+    };
+
+    async addProductsInCart(cid, pid, quantity) {
+        const cart = await this.getCartsById(cid);
+        const productExist = cart.products.find((p) => p.product.equals(pid));
+        if (productExist) {
+            productExist.quantity += quantity || 1;
+        } else {
+            cart.products.push({product: pid, quantity: quantity || 1});
+        }
+        await this.saveCarts(cart);
+        return cart;
+    };
+
+    async deleteProductsInCart(cid, pid) {
+        const cart = await this.getCartsById(cid);
+        cart.products = cart.products.filter((p) => !p.product.equals(pid));
+        await this.saveCarts(cart);
+        return cart;
+    };
+
+    async updateProductsInCart(cid, newProductsInCart) {
+        const cart = await this.getCartsById(cid);
+        newProductsInCart.forEach((newProducts) => {
+            const productExist = cart.products.find(
+                (product) => product.product.toString() === newProducts.product
+            );
+            if(productExist) {
+                productExist.quantity += newProducts.quantity;
             } else {
-                const update = { $push: { products: { _id: obj._id, quantity: obj.quantity}}};
-                await cartModel.updateOne({_id: cid}, update);
-            } return await cartModel.findById(cid);
-        } catch (err) {
-            console.error("Error al agregar el producto al carrito:", err.message);
-            return err;
-        }
+                cart.products.push(newProducts);
+            }
+        });
+        await this.saveCarts(cart);
+        return cart;
     };
 
-    deleteProductInCart = async (cid, products) => {
-        try {
-            return await cartModel.findOneAndUpdate(
-                {_id: cid},
-                {products},
-                {new: true}
-            )
-        } catch (err) {
-            return err
+    async updateProductsQuantityInCart(cid, pid, newQuantity) {
+        const cart = await this.getCartsById(cid);
+        const product = cart.products.find((p) => p.product.equals(pid));
+        if(product) {
+            product.quantity += newQuantity;
+        } else {
+            cart.products.push({product: pid, quantity: newQuantity});
         }
-    }
+        await this.saveCarts(cart);
+        return cart;
+    };
 
-    updateOneProduct = async (cid, products) => {
-        await cartModel.updateOne( 
-            {_id: cid},
-            {products}
-        ) 
-        return await cartModel.findOne({_id: cid});
-    }
+    async clearCart(cid) {
+        const cart = await this.getCartsById(cid);
+        cart.products = [];
+        await this.saveCarts(cart);
+        return cart;
+    };
 };
 
-export default CartManager;
+
+export {CartManagerMongo};

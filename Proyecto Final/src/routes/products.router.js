@@ -1,7 +1,7 @@
 import {Router} from "express";
 const routerP = Router();
-import ProductManager from "../DAL/DAOs/productManagerMongo.js";
-const pm = new ProductManager();
+import {ProductManagerMongo} from "../DAL/DAOs/productManagerMongo.js";
+const pm = new ProductManagerMongo();
 
 routerP.get("/", async (req, res) => {
     try {

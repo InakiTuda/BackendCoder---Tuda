@@ -1,7 +1,7 @@
 import {Router} from "express";
-import ProductManager from "../DAL/DAOs/productManagerMongo.js";
+import { ProductManagerMongo } from "../DAL/DAOs/productManagerMongo.js";
 
-const pm = new ProductManager();
+const pm = new ProductManagerMongo();
 const routerV = Router()
 
 // Vista Home (/api/views)
@@ -57,6 +57,11 @@ routerV.get("/profile", privateAccess, (req, res) => {
     res.render("profile", {
         user: req.session.user,
     })
+});
+
+// Email
+routerV.get("/email", (req, res) => {
+    res.render("Mail");
 });
 
 export default routerV;

@@ -4,10 +4,11 @@ import routerV from "./routes/view.router.js";
 import routerP from "./routes/products.router.js";
 import routerC from "./routes/carts.router.js";
 import routerS from "./routes/sessions.router.js";
+import routerE from "./routes/email.router.js";
 import { __dirname } from "./utils.js";
 import handlebars from "express-handlebars";
 import {Server} from "socket.io";
-import "../src/config/dbConfig.js";
+import "./DAL/mongoDB/dbConfig.js";
 import cookieParser from "cookie-parser";
 import socketProducts from "./listeners/socketProducts.js";
 import socketChat from "./listeners/socketChat.js";
@@ -15,10 +16,10 @@ import session from "express-session";
 import FileStore from "session-file-store";
 import MongoStore from "connect-mongo";
 import passport from "passport";
-import "./passport/passportStrategies.js";
+import "./services/passport/passportStrategies.js";
 
 const app = express();
-const PORT = config.port;
+const PORT = process.env.PORT || 8080;
 const fileStore = FileStore(session)
 
 app.use(express.json());
@@ -27,11 +28,12 @@ app.use(express.urlencoded({extended: true}));
 // Sessions
 app.use(cookieParser());
 app.use(session({
-    store: MongoStore.create({
-        mongoUrl: "mongodb+srv://inakituda:123456ituda@cluster0.pbsxdwh.mongodb.net/ecommerce?retryWrites=true&w=majority",
+        store: MongoStore.create({
+        mongoUrl: config.mongo_uri,
+        mongoOptions: {useNewUrlParser: true, useUnifiedTopology: true},
         ttl: 60000,
-   }),
-    secret: process.env.SESSION_SECRET,
+    }),
+    secret: config.sessionSecret,
     resave: false,
     saveUninitialized: false,
 }));
@@ -47,6 +49,7 @@ app.use("/api/products", routerP);
 app.use("/api/views/products", routerP);
 app.use("/api/carts", routerC);
 app.use("/api/session", routerS);
+app.use("/api/messages", routerE);
 
 app.get('/', (req, res) => {
     res.send('Bienvenidos!');

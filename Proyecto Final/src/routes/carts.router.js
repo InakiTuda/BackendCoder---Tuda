@@ -1,10 +1,10 @@
 import {Router} from "express";
 const routerC = Router()
-import CartManager from "../DAL/DAOs/cartManagerMongo.js";
-import ProductManager from "../DAL/DAOs/productManagerMongo.js";
+import {CartManagerMongo} from "../DAL/DAOs/cartManagerMongo.js";
+import {ProductManagerMongo} from "../DAL/DAOs/productManagerMongo.js";
 
-const cm = new CartManager();
-const pm = new ProductManager();
+const cm = new CartManagerMongo();
+const pm = new ProductManagerMongo();
 
 // Corroborar carritos
 routerC.get("/", async (req, res) => {

@@ -1,23 +1,15 @@
-import {productsModel} from "../../db/models/products.model.js";
+import {productsModel} from "../mongoDB/models/products.model.js";
 
-export default class ProductManager {
-  // Add Products
+class ProductManagerMongo {
   async addProduct(product) {
-    try {
-      const newProduct = new productsModel(product);
-      await newProduct.save();
-      return newProduct;
-    } catch (error) {
-      console.log('Error al agregar producto', error.message);
-      throw new Error('Error al agregar producto');
-    }
-  }
-
+    const newProduct = new productsModel(product);
+    return newProduct;
+  };
+  
   async getProductsCount(queryOptions = {}) {
     return await productsModel.countDocuments(queryOptions);
-  }
-  
-  // GetProducts con 10 por página
+  };
+
   async getProducts(queryOptions = {}, sortOptions = {}, limit = 10, page = 1) {
     const options = {
       sort: sortOptions,
@@ -27,40 +19,21 @@ export default class ProductManager {
     };
     const result = await productsModel.paginate(queryOptions, options);
     return result;
-  }
+  };
 
-  // Productos por ID
-  async getProductById(id) {
-    try {
-      const product = await productsModel.findById(id);
-      return product;
-    } catch (error) {
-      console.log('Error al obtener producto por ID', error.message);
-      throw new Error('Error al obtener producto por ID');
-    }
-  }
+  async getProductsById(id) {
+    return await productsModel.findById(id);
+  };
 
-  //Actualizar producto
   async updateProduct(id, updatedProducts) {
-    try {
-      const product = await productsModel.findByIdAndUpdate(id, updatedProducts, {new: true});
-      return product;
-    } catch (error) {
-      console.log('Error al actualizar producto', error.message);
-      throw new Error('Error al actualizar producto');
-    }
-  }
+    const updateProducts = await productsModel.findByIdAndUpdate(id, updatedProducts);
+    return updateProducts;
+  };
 
-  //Eliminar producto por ID
-  async deleteProduct(id) {
-    try {
-      const deletedProduct = await productsModel.findByIdAndDelete(id);
-      return deletedProduct;
-    } catch (error) {
-      console.log('Error al eliminar producto', error.message);
-      throw new Error('Error al eliminar producto');
-    }
-  }
-}
+  async deleteProducts(id) {
+    const deletedProducts = await productsModel.findByIdAndDelete(id);
+    return deletedProducts;
+  };
+};
 
-export {ProductManager};
+export {ProductManagerMongo};

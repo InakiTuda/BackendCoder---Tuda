@@ -1,33 +1,20 @@
 import { usersManager } from "../DAL/DAOs/userManagerMongo.js";
-import UsersDto from "../DAL/DTOs/users.dto.js";
-import { hashData } from "../utils.js";
 
-class UserService {
-    async findAll() {
-        const response = await usersManager.findAll();
-        return response
+class UsersService {
+    async createUser(user) {
+        const newUser = await usersManager.create(user);
+        return newUser;
     };
 
-    async findOne(id) {
-        const response = await usersManager.findUserById(id);
-        if(!response) {
-            throw new Error("Usuario no encontrado")
-        }
-        return response
+    async findUser(username) {
+        const users = await usersManager.findUser(username);
+        return users;
     };
 
-    async createOne(obj) {
-        const hashPassword = hashData(obj.password);
-        if(!hashPassword) throw new Error("Contraseña no puede ser guardada");
-        const userDTO = new UsersDto({...obj, password: hashPassword});
-        const response = await usersManager.createOne(userDTO);
-        return response;
-    };
-
-    async deleteOne(id) {
-        const response = await usersManager.deleteOne(id);
+    async deleteUser(username) {
+        const response = await usersManager.deleteUser(username);
         return response;
     };
 };
 
-export const usersService = new UserService();
+export const usersService = new UsersService();

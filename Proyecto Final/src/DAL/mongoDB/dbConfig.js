@@ -1,9 +1,8 @@
 import mongoose from "mongoose";
+import config from "../../config.js";
 
-const URI="mongodb+srv://inakituda:123456ituda@cluster0.pbsxdwh.mongodb.net/ecommerce?retryWrites=true&w=majority";
-
-mongoose.connect(URI)
-.then(() => console.log("Conectado a la Base de Datos"))
-.catch((error) => {
-    console.log("Error al conectar a la Base de Datos", error);
-})
+const URI = config.mongo_uri;
+mongoose
+    .connect(URI)
+    .then(() => console.log("Conectado a la Base de Datos"))
+    .catch((error) => console.log(error))

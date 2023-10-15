@@ -1,8 +1,8 @@
 import Router from "express";
-import userModel from "../db/models/user.model.js";
+import userModel from "../DAL/mongoDB/models/user.model.js";
 import {compareData, hashData} from "../utils.js";
 import passport from "passport";
-import { getUsers, createUser } from "../controllers/users.controller.js";
+import UsersDto from "../DAL/DTOs/users.dto.js";
 
 const routerS = Router();
 
@@ -82,14 +82,13 @@ routerS.get('/githubcallback', passport.authenticate('github',{failureRedirect: 
 
 // Ruta Current
 routerS.get("/current", (req, res) => {
-  if (req.isAuthenticated()) {
-    res.status(200).json({user: req.user});
-  } else {
-    res.status(401).json({error: "Usuario no autenticado"});
-  }
+  const userDto = new UsersDto(req.session.user);
+  res.status(200).json({user: userDto})
+  //if (req.isAuthenticated()) {
+  //  res.status(200).json({user: req.user});
+  //} else {
+  //  res.status(401).json({error: "Usuario no autenticado"});
+  //}
 });
-
-routerS.get("/", getUsers);
-routerS.post("/", createUser);
 
 export default routerS;
