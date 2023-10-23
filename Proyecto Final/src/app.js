@@ -30,7 +30,6 @@ app.use(cookieParser());
 app.use(session({
         store: MongoStore.create({
         mongoUrl: config.mongo_uri,
-        mongoOptions: {useNewUrlParser: true, useUnifiedTopology: true},
         ttl: 60000,
     }),
     secret: config.sessionSecret,

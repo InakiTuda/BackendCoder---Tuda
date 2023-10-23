@@ -16,8 +16,12 @@ class CartsService {
     };
 
     async addProductsInCart(cid, pid, quantity) {
-        const cart = await this.cartManager.addProductsInCart(cid, pid, quantity);
-        return cart;
+        try {
+            const cart = await this.cartManager.addProductsInCart(cid, pid, quantity);
+            return this.totalQuantityInCart(cart)
+        } catch (error) {
+            return error
+        }
     };
 
     async deleteProductsInCart(cid, pid) {

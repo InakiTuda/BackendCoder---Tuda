@@ -2,6 +2,9 @@ import {Router} from "express";
 const routerC = Router()
 import {CartManagerMongo} from "../DAL/DAOs/cartManagerMongo.js";
 import {ProductManagerMongo} from "../DAL/DAOs/productManagerMongo.js";
+import {cartsService} from "../services/carts.service.js";
+import {productsService} from "../services/products.service.js";
+import {ticketService} from "../services/ticket.service.js";
 
 const cm = new CartManagerMongo();
 const pm = new ProductManagerMongo();
@@ -147,5 +150,40 @@ routerC.delete("/:cid", async (req, res) => {
         return res.status(500).send({message: "Ocurrio un error mientras se procesa el pedido"});
     }
 });
+
+// Ruta Purchase
+routerC.post("/:cid/purchase", async (req, res) => {
+    const cid = req.params.cid;
+    try {
+        const cart = await cartsService.getCartsById(cid);
+        if (!cart) {
+            return res.status(300).json({error: "Carrito no encontrado"});
+        }
+        for (const productsOnCart of cart.products) {
+            const product = await productsService.getProductsById(productsOnCart.product);
+            if (!product) {
+                return res.status(404).json({error: "Producto no encontrado"});
+            }
+            if (productsOnCart.quantity > product.stock) {
+                return res.status(400).json({error: "No hay stock para el producto solicitado"});
+            }
+            product.stock -= productsOnCart.quantity;
+            await product.save();
+        }
+        await cartsService.totalQuantityInCart(cart);
+        // Ticket
+        const ticketCompra = {
+            code: await generateUniqueCode(),
+            purchase_datetime: new Date(),
+            amount: cart.totalAmount,
+            purchaser: "Iñaki Tuda"
+        };
+        const ticket = await ticketService.createTickets(ticketCompra);
+        await cartsService.clearCart(cid);
+        res.status(200).json({message: "Compra exitosa con ticket", ticket});
+    } catch (error) {
+        res.status(500).json({error: error.message});
+    }
+})
 
 export default routerC;

@@ -14,18 +14,18 @@ class ProductsService {
         return products;
     };
 
-    async getProductsById(id) {
-        const product = await this.productsManager.getProductsById(id);
+    async getProductsById(pid) {
+        const product = await this.productsManager.getProductsById(pid);
         return product;
     };
 
-    async updateProducts(id, updatedProducts) {
-        const updateProducts = await this.productsManager.updateProducts(id, updatedProducts);
+    async updateProducts(pid, updatedProducts) {
+        const updateProducts = await this.productsManager.updateProducts(pid, updatedProducts);
         return updateProducts;
     };
 
-    async deleteProducts(id) {
-        const deletedProducts = await this.productsManager.deleteProducts(id);
+    async deleteProducts(pid) {
+        const deletedProducts = await this.productsManager.deleteProducts(pid);
         return deletedProducts;
     };
 };
