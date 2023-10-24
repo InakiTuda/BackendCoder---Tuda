@@ -17,6 +17,10 @@ import FileStore from "session-file-store";
 import MongoStore from "connect-mongo";
 import passport from "passport";
 import "./services/passport/passportStrategies.js";
+import { generateProducts } from "./mocks/mockingproducts.js";
+import ProductError from "./errors/CustomError.js";
+import { ErrorMessages } from "./errors/error.enum.js";
+import {errorMiddleware} from "./errors/error.middleware.js";
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -86,3 +90,24 @@ const mensajes = [];
 
 socketProducts(socketServer);
 socketChat(socketServer);
+
+// Mocking Products
+app.get("/api/mockingproducts", (req, res) => {
+    const mockProducts = [];
+    for (let i = 0; i < 100; i++) {
+        const productsMock = generateProducts();
+        mockProducts.push(productsMock);
+    }
+    res.json(mockProducts);
+});
+
+// Error
+app.get("/products", (req, res) => {
+    //ProductError.createError({
+    ProductError.createError(ErrorMessages.PRODUCT_NOT_FOUND)
+        //message: "No se encontró el producto", 
+        //name: "Error Producto", 
+        //cause: "No existe producto con ese ID"
+});
+
+app.use(errorMiddleware);
