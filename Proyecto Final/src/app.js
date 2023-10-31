@@ -21,6 +21,7 @@ import { generateProducts } from "./mocks/mockingproducts.js";
 import ProductError from "./errors/CustomError.js";
 import { ErrorMessages } from "./errors/error.enum.js";
 import {errorMiddleware} from "./errors/error.middleware.js";
+import { logger } from "./winston.js";
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -81,7 +82,7 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 const httpServer = app.listen(PORT, () => {
-        console.log(`Conectado al puerto ${PORT}`);
+    logger.info(`Conectado al puerto ${PORT}`);
 });
 
 const socketServer = new Server(httpServer);
@@ -111,3 +112,14 @@ app.get("/products", (req, res) => {
 });
 
 app.use(errorMiddleware);
+
+// Logger
+app.get("/loggerTest", (req, res) => {
+    logger.fatal("Fatal");
+    logger.error("Error");
+    logger.warning("Warning");
+    logger.info("Info");
+    logger.http("Http");
+    logger.debug("Debug");
+    res.send("Logger Test");
+});
