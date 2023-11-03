@@ -11,7 +11,7 @@ const pm = new ProductManagerMongo();
 
 // Corroborar carritos
 routerC.get("/", async (req, res) => {
-    const carrito = await cm.getCarts();
+    const carrito = await cm.getCartsById();
     res.json({carrito});
 });
 
