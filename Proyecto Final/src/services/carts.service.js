@@ -34,11 +34,6 @@ class CartsService {
         return cart;
     };
 
-    async updateProductsQuantityInCart(cid, pid, newQuantity) {
-        const cart = await this.cartManager.updateProductsQuantityInCart(cid, pid, newQuantity);
-        return cart;
-    };
-
     async clearCart(cid) {
         const cart = await this.cartManager.clearCart(cid);
         return cart;

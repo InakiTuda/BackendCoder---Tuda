@@ -1,154 +1,65 @@
-import {Router} from "express";
-const routerC = Router()
-import {CartManagerMongo} from "../DAL/DAOs/cartManagerMongo.js";
-import {ProductManagerMongo} from "../DAL/DAOs/productManagerMongo.js";
-import {cartsService} from "../services/carts.service.js";
-import {productsService} from "../services/products.service.js";
-import {ticketService} from "../services/ticket.service.js";
+import { Router } from "express";
+import { CartManagerMongo } from "../DAL/DAOs/cartManagerMongo.js";
+import { isUser } from "../middlewares/auth.middlewares.js";
+import logger from "../winston.js";
 
-const cm = new CartManagerMongo();
-const pm = new ProductManagerMongo();
+const routerC = Router();
+const CM = new CartManagerMongo();
 
-// Corroborar carritos
-routerC.get("/", async (req, res) => {
-    const carrito = await cm.getCartsById();
-    res.json({carrito});
+/* Usar controllers */
+
+// Crear carrito
+routerC.post("/", (req, res) => {
+    const newCart = CM.createCarts();
+    logger.info("Carrito creado");
+    res.status(400).json(newCart);
 });
 
-// Devolver carrito
-routerC.get("/:cid", async (req, res) => {
-    const {cid} = req.params;
-    const carritoFound = await cm.getCartById(cid);
-    res.json({status: "success", carritoFound});
+// Agregar productos al carrito
+routerC.post("/:cid/product/:pid", isUser, async (req, res) => {
+    const cid = req.params.cid;
+    const pid = req.params.pid;
+    const { quantity } = req.body;
+    if (!quantity || isNaN(quantity)) {
+        logger.error("No se puede agregar está cantidad de productos al carrito");
+        return res.status(404).send({status: "error", message: "No es posible agregar está cantidad de productos al carrito"});
+    };
+    const cart = CM.addProductsInCart(cid, pid, quantity);
+    if (!cart) {
+        logger.error("No se puede agregar productos al carrito");
+        return res.status(404).send({status: "error", message: "No es posible agregar productos al carrito"});
+    };
+    res.json(cart);
 });
 
-// Crear carrito con o sin productos
-routerC.post("/", async (req, res) => {
-    try {
-        const {obj} = req.body;
-        if (!Array.isArray(obj)) {
-            return res.status(400).send("Tu pedido es incorrecto: Los productos deben ser array");
-        }
-        const validProducts = [];
-        for (const product of obj) {
-            const checkId = await pm.getProductsById(product._id);
-            if (checkId === null) {
-                return res.status(404).send(`Product con ID ${product._id} no encontrado`);
-            }
-            validProducts.push(checkId);
-        }
-        const cart = await cm.addCart(validProducts);
-        res.status(200).send(cart);
-    } catch (err) {
-        console.log(err);
-        res.status(500).send("Error Interno Servidor");
-    }
-});
-
-// Poner cantidad de un producto
-routerC.post("/:cid/products/:pid", async (req, res) => {
-    const {cid, pid} = req.params;
-    const {quantity} = req.body;
-    try {
-        const checkIdProduct = await pm.getProductsById(pid);
-        if (!checkIdProduct) {
-            return res.status(404).send({message: `Producto con ID: ${pid} no encontrado`});
-        }
-        const checkIdCart = await cm.getCartById(cid);
-        if (!checkIdCart) {
-            return res.status(404).send({message: `Carrito con ID: ${pid} no encontrado`});
-        }
-        const result = await cm.addProductInCart(cid, {_id: pid, quantity: quantity});
-        console.log(result);
-        return res.status(200).send({
-            message: `Product con ID: ${pid} agregado al carrito con ID: ${cid}`,
-            cart: result,
-        });
-    } catch (error) {
-        console.error("Error:", error);
-        return res.status(500).send({message: "Ocurrio un error mientras se procesa el pedido"});
-    }
-});
-
-// Actualizar lista de productos en el carrito
+// Actualizar productos del carrito
 routerC.put("/:cid", async (req, res) => {
+    const cid = req.params.cid;
+    const products = req.body.products;
     try {
-        const {cid} = req.params;
-        const {products} = req.body;
-        // Verificar si existe un producto antes de actualizar el carrito
-        for (const product of products) {
-            const checkId = await pm.getProductsById(product._id);
-            if (!checkId) {
-                return res.status(404).send({status: "error", message: `El producto con ID: ${product._id} no fue encontrado`});
-            }
-        }
-        // Verificar si carrito con ID cid existe
-        const checkIdCart = await cm.getCartById(cid);
-        if (!checkIdCart) {
-            return res.status(404).send({status: "error", message: `El carrito con ID: ${cid} no fue encontrado`});
-        }
-        // Actualizar carrito en la BD con la lista de productos actualizada
-        const cart = await cm.updateProductsInCart(cid, products);
-        return res.status(200).send({status: "success", payload: cart});
+        const cart = await CM.updateProductsInCart(cid, products);
+        res.json(cart);
     } catch (error) {
-        console.log(error);
-        return res.status(500).send({status: "error", message: "Ocurrio un error mientras se procesa el pedido"});
+        logger.error("No se pudo actualizar el carrito");
+        res.status(404).json({status: "error", message: "No se pudo actualizar el carrito"});
     }
 });
 
-// Eliminar un producto del carrito
-routerC.delete("/:cid/products/:pid", async (req, res) => {
+// Eliminar producto por ID del carrito
+routerC.delete("/:cid/product/:pid", async (req, res) => {
+    const cid = req.params.cid;
+    const pid = req.params.pid;
     try {
-        const {cid, pid} = req.params;
-        // Verificar si producto con ID pid existe
-        const checkIdProduct = await pm.getProductsById(pid);
-        if (!checkIdProduct) {
-            return res.status(404).send({status: "eror", message: `Producto con ID: ${pid} no encontrado`});
-        }
-        // Verificar si carrito con ID cid existe
-        const checkIdCart = await cm.getCartById(cid);
-        if (!checkIdCart) {
-            return res.status(404).send({status: "eror", message: `Carrito con ID: ${cid} no encontrado`});
-        }
-        // Buscar el Index del producto en la lista de productos del carrito
-        const findProductIndex = checkIdCart.products.findIndex((product) => product._id.toString() === pid);
-        if (findProductIndex === -1) {
-            return res.status(404).send({status: "error", message: `Producto con ID: ${pid} no encontrado en carrito`});
-        }
-        // Eliminar el producto de la lista de productos del carrito
-        checkIdCart.products.splice(findProductIndex, 1);
-        // Actualizar el carrito en la base de datos sin el producto eliminado
-        const updatedCart = await cm.deleteProductInCart(cid, checkIdCart.products);
-        return res.status(200).send({status: "success", message: `Producto con ID: ${pid} eliminado`, cart: updatedCart});
-    } catch (error) {
-        console.log(error);
-        return res.status(500).send({status: "error", message: "Ocurrio un error mientras se procesa el pedido"});
-    }
-});
-
-// Eliminar todos los productos de un carrito
-routerC.delete("/:cid", async (req, res) => {
-    try {
-        const {cid} = req.params;
-        const cart = await cm.getCartById(cid);
+        const cart = await CM.deleteProductsInCart(cid, pid);
         if (!cart) {
-            return res.status(404).send({message: `Carrito con ID: ${cid} no encontrado`})
+            logger.error("Carrito NO encontrado");
+            return res.status(404).send({status: "error", message: "Carrito NO encontrado"});
         }
-        if (cart.products.length === 0) {
-            return res.status(404).send({message: "El carrito ya está vacio"})
-        }
-        // Vaciar el carrito estableciendo la propiedad "products" como un array vacio
-        cart.products = [];
-        await cm.updateOneProduct(cid, cart.products);
-        return res.status(200).send({
-            status: "success",
-            message: `Carrito con ID: ${cid} fue vaciado correctamente`,
-            cart: cart,
-        });
+        res.json(cart);
     } catch (error) {
-        console.log(error);
-        return res.status(500).send({message: "Ocurrio un error mientras se procesa el pedido"});
-    }
+        logger.error("No se pudo eliminar el producto");
+        return res.status(404).send({status: "error", message: "No se pudo eliminar el producto"});
+    };
 });
 
 // Ruta Purchase
@@ -184,6 +95,6 @@ routerC.post("/:cid/purchase", async (req, res) => {
     } catch (error) {
         res.status(500).json({error: error.message});
     }
-})
+});
 
 export default routerC;

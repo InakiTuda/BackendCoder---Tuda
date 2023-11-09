@@ -11,6 +11,11 @@ class UsersService {
         return users;
     };
 
+    async updateUser(id, obj) {
+        const users = await usersManager.updateUser(id, obj);
+        return users;
+    };
+
     async deleteUser(username) {
         const response = await usersManager.deleteUser(username);
         return response;
