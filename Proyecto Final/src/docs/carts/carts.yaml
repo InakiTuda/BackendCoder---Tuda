@@ -67,6 +67,11 @@ paths:
           application/json:
             schema:
               $ref: "#components/requestBodies/updateCart"
+      responses: 
+        "200":
+          description: Carrito con ID actualizado con éxito
+        "404":
+          description: Carrito no actualizado
 
     delete:
       summary: Eliminar carrito por ID
