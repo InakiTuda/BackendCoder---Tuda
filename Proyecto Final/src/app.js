@@ -123,3 +123,20 @@ app.get("/loggerTest", (req, res) => {
     logger.debug("Debug");
     res.send("Logger Test");
 });
+
+// Swagger
+import swaggerUiExpress from "swagger-ui-express";
+import swaggerJSDoc from "swagger-jsdoc";
+
+const swaggerOptions = {
+    definition: {
+        openapi: "3.0.1",
+        info: {
+            title: "Documentación de IñaShop",
+            description: "API Rest de IñaShop"
+        },
+    },
+    apis: [`${__dirname}/docs/**/*.yaml`],
+};
+const specs = swaggerJSDoc(swaggerOptions);
+app.use("/api/docs", swaggerUiExpress.serve, swaggerUiExpress.setup(specs));
